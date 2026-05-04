@@ -17,6 +17,7 @@ describe('ProjectService', () => {
       slug: 'test-project',
       ...mockData,
       coverImage: 'image.jpg',
+      videoUrl: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -24,7 +25,7 @@ describe('ProjectService', () => {
     prismaMock.project.findUnique.mockResolvedValue(null);
     prismaMock.project.create.mockResolvedValue(mockResult);
 
-    const result = await ProjectService.create(mockData, 'image.jpg');
+    const result = await ProjectService.create(mockData, { coverImage: 'image.jpg' });
 
     expect(result).toBeDefined();
     expect(result.name).toBe('Test Project');

@@ -22,9 +22,12 @@ export const cloudinaryStorage = new CloudinaryStorage({
       folderName = 'neo-telemetri-profile/news';
     }
 
+    const isVideo = file.mimetype.startsWith('video');
+
     return {
       folder: folderName,
-      format: 'png',
+      resource_type: isVideo ? 'video' : 'image',
+      format: isVideo ? undefined : 'png', // Keep original format for videos, force png for images
       public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
     };
   },

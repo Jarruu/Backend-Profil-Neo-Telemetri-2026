@@ -67,18 +67,21 @@ router.get("/dashboard", authenticate, authorize(['MARKETING']), ProjectControll
  *               coverImage:
  *                 type: string
  *                 format: binary
+ *               video:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: Project created successfully.
  */
-router.post("/", authenticate, authorize(['MARKETING']), upload.single('coverImage'), ProjectController.create);
+router.post("/", authenticate, authorize(['MARKETING']), upload.fields([{ name: 'coverImage', maxCount: 1 }, { name: 'video', maxCount: 1 }]), ProjectController.create);
 
 /**
  * @swagger
  * /api/marketing/{id}:
  *   put:
  *     summary: Update project
- *     description: Update an existing project's details or image.
+ *     description: Update an existing project's details, image, or video.
  *     tags: [Projects]
  *     security:
  *       - bearerAuth: []
@@ -104,7 +107,6 @@ router.post("/", authenticate, authorize(['MARKETING']), upload.single('coverIma
  *               category:
  *                 type: string
  *                 enum: ["Web", "Mobile", "ThreeD", "UI_UX", "VideoEditing", "ProxmoxVE", "Docker", "Nextcloud"]
-
  *               projectLink:
  *                 type: string
  *               creationDate:
@@ -113,11 +115,14 @@ router.post("/", authenticate, authorize(['MARKETING']), upload.single('coverIma
  *               coverImage:
  *                 type: string
  *                 format: binary
+ *               video:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Project updated successfully.
  */
-router.put("/:id", authenticate, authorize(['MARKETING']), upload.single('coverImage'), ProjectController.update);
+router.put("/:id", authenticate, authorize(['MARKETING']), upload.fields([{ name: 'coverImage', maxCount: 1 }, { name: 'video', maxCount: 1 }]), ProjectController.update);
 
 /**
  * @swagger

@@ -24,7 +24,7 @@ export class ProjectService {
     return project;
   }
 
-  static async create(data: any, filePath: string | undefined) {
+  static async create(data: any, files: { coverImage?: string, video?: string }) {
     const slug = generateSlug(data.name);
     
     const existing = await prisma.project.findUnique({ where: { slug } });
@@ -39,12 +39,13 @@ export class ProjectService {
         category: data.category,
         projectLink: data.projectLink || null,
         creationDate: data.creationDate,
-        coverImage: filePath || null
+        coverImage: files.coverImage || null,
+        videoUrl: files.video || null
       }
     });
   }
 
-  static async update(id: string, data: any, filePath: string | undefined) {
+  static async update(id: string, data: any, files: { coverImage?: string, video?: string }) {
     const updateData: any = {
       name: data.name,
       description: data.description,
@@ -54,8 +55,12 @@ export class ProjectService {
       creationDate: data.creationDate,
     };
 
-    if (filePath) {
-      updateData.coverImage = filePath;
+    if (files.coverImage) {
+      updateData.coverImage = files.coverImage;
+    }
+
+    if (files.video) {
+      updateData.videoUrl = files.video;
     }
 
     return await prisma.project.update({

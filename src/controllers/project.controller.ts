@@ -125,7 +125,7 @@ export class ProjectController {
    * /api/marketing/projects:
    *   post:
    *     summary: Register a new project
-   *     description: Create a new project entry with file upload support for the cover image.
+   *     description: Create a new project entry with file upload support for the cover image and video.
    *     tags: [Projects]
    *     security:
    *       - bearerAuth: []
@@ -151,7 +151,6 @@ export class ProjectController {
    *                 type: string
    *                 enum: ["Web", "Mobile", "ThreeD", "UI_UX", "VideoEditing", "ProxmoxVE", "Docker", "Nextcloud"]
    *                 example: Web
-
    *               projectLink:
    *                 type: string
    *                 format: uri
@@ -165,6 +164,10 @@ export class ProjectController {
    *                 type: string
    *                 format: binary
    *                 description: Project thumbnail image.
+   *               video:
+   *                 type: string
+   *                 format: binary
+   *                 description: Project video file.
    *     responses:
    *       201:
    *         description: Project created successfully.
@@ -176,7 +179,11 @@ export class ProjectController {
   static async create(req: Request, res: Response) {
     try {
       const validatedData = ProjectSchema.parse(req.body);
-      const project = await ProjectService.create(validatedData, req.file?.path);
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      const coverImage = files?.coverImage?.[0]?.path;
+      const video = files?.video?.[0]?.path;
+
+      const project = await ProjectService.create(validatedData, { coverImage, video });
       res.status(201).json(project);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -191,7 +198,7 @@ export class ProjectController {
    * /api/marketing/projects/{id}:
    *   put:
    *     summary: Update an existing project
-   *     description: Modify details of a specific project by its ID. Re-uploading the cover image is optional.
+   *     description: Modify details of a specific project by its ID. Re-uploading the cover image or video is optional.
    *     tags: [Projects]
    *     security:
    *       - bearerAuth: []
@@ -208,7 +215,30 @@ export class ProjectController {
    *       content:
    *         multipart/form-data:
    *           schema:
-   *             $ref: '#/components/schemas/ProjectCreate'
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *               description:
+   *                 type: string
+   *               division:
+   *                 type: string
+   *                 enum: ["Programming", "Multimedia", "SKJ"]
+   *               category:
+   *                 type: string
+   *                 enum: ["Web", "Mobile", "ThreeD", "UI_UX", "VideoEditing", "ProxmoxVE", "Docker", "Nextcloud"]
+   *               projectLink:
+   *                 type: string
+   *                 format: uri
+   *               creationDate:
+   *                 type: string
+   *                 format: date
+   *               coverImage:
+   *                 type: string
+   *                 format: binary
+   *               video:
+   *                 type: string
+   *                 format: binary
    *     responses:
    *       200:
    *         description: Project updated successfully.
@@ -218,7 +248,11 @@ export class ProjectController {
   static async update(req: Request, res: Response) {
     try {
       const validatedData = ProjectSchema.parse(req.body);
-      const project = await ProjectService.update(req.params.id as string, validatedData, req.file?.path);
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      const coverImage = files?.coverImage?.[0]?.path;
+      const video = files?.video?.[0]?.path;
+
+      const project = await ProjectService.update(req.params.id as string, validatedData, { coverImage, video });
       res.json(project);
     } catch (error) {
       if (error instanceof z.ZodError) {
