@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  MARKETING
+  PR
+}
+
+enum Division {
+  Programming
+  Multimedia
+  SKJ
+}
+
+enum Category {
+  Web
+  Mobile
+  ThreeD
+  UI_UX
+  VideoEditing
+  ProxmoxVE
+  Docker
+  Nextcloud
+}
+
+model Project {
+  id           String   @id @default(uuid())
+  name         String
+  slug         String   @unique
+  description  String
+  coverImage   String?
+  division     Division
+  category     Category
+  projectLink  String?
+  creationDate DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model News {
+  id               String   @id @default(uuid())
+  title            String
+  slug             String   @unique
+  shortDescription String
+  content          String   @db.Text
+  coverImage       String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
